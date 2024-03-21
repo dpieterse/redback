@@ -56,6 +56,7 @@ class Plotter(object):
 
     bbox_inches = KwargsAccessorWithDefault("bbox_inches", "tight")
     linewidth = KwargsAccessorWithDefault("linewidth", 2)
+    linestyle = KwargsAccessorWithDefault("linestyle", "solid")
     zorder = KwargsAccessorWithDefault("zorder", -1)
 
     xy = KwargsAccessorWithDefault("xy", (0.95, 0.9))
@@ -107,6 +108,7 @@ class Plotter(object):
         :keyword random_sample_color: Color of the random sample curves.
         :keyword bbox_inches: Setting for saving plots. Default is 'tight'.
         :keyword linewidth: Same as matplotlib linewidth
+        :keyword linestyle: Same as matplotlib linestyle
         :keyword zorder: Same as matplotlib zorder
         :keyword xy: For `ax.annotate' x and y coordinates of the point to annotate.
         :keyword xycoords: The coordinate system `xy` is given in. Default is 'axes fraction'
@@ -337,14 +339,15 @@ class IntegratedFluxPlotter(Plotter):
     def _plot_lightcurves(self, axes: matplotlib.axes.Axes, times: np.ndarray) -> None:
         if self.plot_max_likelihood:
             ys = self.model(times, **self._max_like_params, **self._model_kwargs)
-            axes.plot(times, ys, color=self.max_likelihood_color, alpha=self.max_likelihood_alpha, lw=self.linewidth)
+            axes.plot(times, ys, color=self.max_likelihood_color, alpha=self.max_likelihood_alpha, lw=self.linewidth,
+            	       ls=self.linestyle)
 
         random_ys_list = [self.model(times, **random_params, **self._model_kwargs)
                           for random_params in self._get_random_parameters()]
         if self.uncertainty_mode == "random_models":
             for ys in random_ys_list:
                 axes.plot(times, ys, color=self.random_sample_color, alpha=self.random_sample_alpha, lw=self.linewidth,
-                          zorder=self.zorder)
+                          ls=self.linestyle, zorder=self.zorder)
         elif self.uncertainty_mode == "credible_intervals":
             lower_bound, upper_bound, _ = redback.utils.calc_credible_intervals(samples=random_ys_list)
             axes.fill_between(
@@ -353,7 +356,7 @@ class IntegratedFluxPlotter(Plotter):
     def _plot_single_lightcurve(self, axes: matplotlib.axes.Axes, times: np.ndarray, params: dict) -> None:
         ys = self.model(times, **params, **self._model_kwargs)
         axes.plot(times, ys, color=self.random_sample_color, alpha=self.random_sample_alpha, lw=self.linewidth,
-                  zorder=self.zorder)
+                  ls=self.linestyle, zorder=self.zorder)
 
     def plot_residuals(
             self, axes: matplotlib.axes.Axes = None, save: bool = True, show: bool = True) -> matplotlib.axes.Axes:
@@ -615,11 +618,12 @@ class MagnitudePlotter(Plotter):
                 ys = self.model(times, **self._max_like_params, **self._model_kwargs)
                 if band in self.band_scaling:
                     if self.band_scaling.get("type") == 'x':
-                        axes.plot(times - self._reference_mjd_date, ys * self.band_scaling.get(band), color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth)
+                        axes.plot(times - self._reference_mjd_date, ys * self.band_scaling.get(band), color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth, ls=self.linestyle)
                     elif self.band_scaling.get("type") == '+':
-                        axes.plot(times - self._reference_mjd_date, ys + self.band_scaling.get(band), color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth)
+                        axes.plot(times - self._reference_mjd_date, ys + self.band_scaling.get(band), color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth, ls=self.linestyle)
                 else:        
-                    axes.plot(times - self._reference_mjd_date, ys, color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth)
+                    axes.plot(times - self._reference_mjd_date, ys, color=color_max, alpha=self.max_likelihood_alpha, lw=self.linewidth,
+                              ls=self.linestyle)
 
             random_ys_list = [self.model(times, **random_params, **self._model_kwargs)
                               for random_params in self._get_random_parameters()]
@@ -627,11 +631,11 @@ class MagnitudePlotter(Plotter):
                 for ys in random_ys_list:
                     if band in self.band_scaling:
                         if self.band_scaling.get("type") == 'x':
-                            axes.plot(times - self._reference_mjd_date, ys * self.band_scaling.get(band), color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, zorder=-1)
+                            axes.plot(times - self._reference_mjd_date, ys * self.band_scaling.get(band), color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, ls=self.linestyle, zorder=-1)
                         elif self.band_scaling.get("type") == '+':
-                            axes.plot(times - self._reference_mjd_date, ys + self.band_scaling.get(band), color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, zorder=-1)
+                            axes.plot(times - self._reference_mjd_date, ys + self.band_scaling.get(band), color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, ls=self.linestyle, zorder=-1)
                     else:
-                        axes.plot(times - self._reference_mjd_date, ys, color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, zorder=-1)
+                        axes.plot(times - self._reference_mjd_date, ys, color=color_sample, alpha=self.random_sample_alpha, lw=self.linewidth, ls=self.linestyle, zorder=-1)
             elif self.uncertainty_mode == "credible_intervals":
                 if band in self.band_scaling:
                     if self.band_scaling.get("type") == 'x':
@@ -781,13 +785,13 @@ class MagnitudePlotter(Plotter):
                 ys = self.model(times, **self._max_like_params, **new_model_kwargs)
                 axes[ii].plot(
                     times - self._reference_mjd_date, ys, color=color_max,
-                    alpha=self.max_likelihood_alpha, lw=self.linewidth)
+                    alpha=self.max_likelihood_alpha, lw=self.linewidth, ls=self.linestyle)
             random_ys_list = [self.model(times, **random_params, **new_model_kwargs)
                               for random_params in self._get_random_parameters()]
             if self.uncertainty_mode == "random_models":
                 for random_ys in random_ys_list:
                     axes[ii].plot(times - self._reference_mjd_date, random_ys, color=color_sample,
-                                  alpha=self.random_sample_alpha, lw=self.linewidth, zorder=self.zorder)
+                                  alpha=self.random_sample_alpha, lw=self.linewidth, ls=self.linestyle, zorder=self.zorder)
             elif self.uncertainty_mode == "credible_intervals":
                 lower_bound, upper_bound, _ = redback.utils.calc_credible_intervals(samples=random_ys_list)
                 axes[ii].fill_between(
