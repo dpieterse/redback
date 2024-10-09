@@ -772,14 +772,17 @@ def interpolated_barnes_and_kasen_thermalisation_efficiency(mej, vej):
     :param vej: initial ejecta velocity as a fraction of speed of light
     :return: av, bv, dv constants in the thermalisation efficiency equation Eq 25 in Metzger 2017
     """
-    v_array = np.array([0.1, 0.2, 0.3])
-    mass_array = np.array([1.0e-3, 5.0e-3, 1.0e-2, 5.0e-2])
-    a_array = np.asarray([[2.01, 4.52, 8.16], [0.81, 1.9, 3.2],
-                     [0.56, 1.31, 2.19], [.27, .55, .95]])
-    b_array = np.asarray([[0.28, 0.62, 1.19], [0.19, 0.28, 0.45],
-                     [0.17, 0.21, 0.31], [0.10, 0.13, 0.15]])
-    d_array = np.asarray([[1.12, 1.39, 1.52], [0.86, 1.21, 1.39],
-                     [0.74, 1.13, 1.32], [0.6, 0.9, 1.13]])
+    v_array = np.asarray([0.1, 0.2, 0.3, 0.4])
+    mass_array = np.asarray([1.e-3, 5.e-3, 1.e-2, 5.e-2, 1.e-1])
+    a_array = np.asarray([[2.01, 4.52, 8.16, 16.3], [0.81, 1.9, 3.2, 5.0],
+                              [0.56, 1.31, 2.19, 3.0], [.27, .55, .95, 2.0],
+                              [0.20, 0.39, 0.65, 0.9]])
+    b_array = np.asarray([[0.28, 0.62, 1.19, 2.4], [0.19, 0.28, 0.45, 0.65],
+                              [0.17, 0.21, 0.31, 0.45], [0.10, 0.13, 0.15, 0.17],
+                              [0.06, 0.11, 0.12, 0.12]])
+    d_array = np.asarray([[1.12, 1.39, 1.52, 1.65], [0.86, 1.21, 1.39, 1.5],
+                              [0.74, 1.13, 1.32, 1.4], [0.6, 0.9, 1.13, 1.25],
+                              [0.63, 0.79, 1.04, 1.5]])
     a_func = RegularGridInterpolator((mass_array, v_array), a_array, bounds_error=False, fill_value=None)
     b_func = RegularGridInterpolator((mass_array, v_array), b_array, bounds_error=False, fill_value=None)
     d_func = RegularGridInterpolator((mass_array, v_array), d_array, bounds_error=False, fill_value=None)
@@ -809,7 +812,7 @@ def heatinggrids():
         -0.398, 0.000, 0.301, 0.477, 0.477, 0.477], dtype=np.float64)
 
     # Reshape GRIDs to a 2D array
-    E0_GRID = E0_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    E0_GRID = E0_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # ALP_GRID
     ALP_GRID = np.array([
@@ -825,7 +828,7 @@ def heatinggrids():
         1.40, 1.40, 1.40, 1.60, 1.60, 1.60
     ], dtype=np.float64)
 
-    ALP_GRID = ALP_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    ALP_GRID = ALP_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # T0_GRID
     T0_GRID = np.array([
@@ -841,7 +844,7 @@ def heatinggrids():
         0.16, 0.08, 0.04, 0.02, 0.018, 0.016
     ], dtype=np.float64)
 
-    T0_GRID = T0_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    T0_GRID = T0_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # SIG_GRID
     SIG_GRID = np.array([
@@ -857,7 +860,7 @@ def heatinggrids():
         0.03, 0.015, 0.007, 0.01, 0.009, 0.007
     ], dtype=np.float64)
 
-    SIG_GRID = SIG_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    SIG_GRID = SIG_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # ALP1_GRID
     ALP1_GRID = np.array([
@@ -873,7 +876,7 @@ def heatinggrids():
         3.00, 3.00, 3.00, 3.00, 3.00, 3.00
     ], dtype=np.float64)
 
-    ALP1_GRID = ALP1_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    ALP1_GRID = ALP1_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # T1_GRID
     T1_GRID = np.array([
@@ -889,7 +892,7 @@ def heatinggrids():
         0.04, 0.02, 0.01, 0.002, 0.002, 0.002
     ], dtype=np.float64)
 
-    T1_GRID = T1_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    T1_GRID = T1_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     SIG1_GRID = np.array([0.250, 0.120, 0.045, 0.028, 0.020, 0.015,
                           0.250, 0.060, 0.035, 0.020, 0.016, 0.012,
@@ -902,7 +905,7 @@ def heatinggrids():
                           10.0, 10.0, 10.0, 10.0, 10.0, 10.0,
                           0.01, 0.005, 0.002, 1e-4, 1e-4, 1e-4])
 
-    SIG1_GRID = SIG1_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    SIG1_GRID = SIG1_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     C1_GRID = np.array([27.2, 27.8, 28.2, 28.2, 28.2, 28.2,
                         28.0, 27.8, 27.8, 27.8, 27.8, 27.8,
@@ -915,7 +918,7 @@ def heatinggrids():
                         20.4, 20.6, 20.8, 20.9, 20.9, 21.0,
                         29.9, 30.1, 30.1, 30.2, 30.3, 30.3])
 
-    C1_GRID = C1_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    C1_GRID = C1_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     TAU1_GRID = np.array([4.07, 4.07, 4.07, 4.07, 4.07, 4.07,
                           4.07, 4.07, 4.07, 4.07, 4.07, 4.07,
@@ -928,7 +931,7 @@ def heatinggrids():
                           1.02, 1.02, 1.02, 1.02, 1.02, 1.02,
                           0.22, 0.22, 0.22, 0.22, 0.22, 0.22])
 
-    TAU1_GRID = TAU1_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    TAU1_GRID = TAU1_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     C2_GRID = np.array([21.5, 21.5, 22.1, 22.1, 22.1, 22.1,
                         22.3, 21.5, 21.5, 21.8, 21.8, 21.8,
@@ -941,7 +944,7 @@ def heatinggrids():
                         18.4, 18.4, 18.6, 18.6, 18.6, 18.6,
                         27.8, 28.0, 28.2, 28.2, 28.3, 28.3])
 
-    C2_GRID = C2_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    C2_GRID = C2_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     TAU2_GRID = np.array([4.62, 4.62, 4.62, 4.62, 4.62, 4.62,
                           4.62, 4.62, 4.62, 4.62, 4.62, 4.62,
@@ -954,7 +957,7 @@ def heatinggrids():
                           0.32, 0.32, 0.32, 0.32, 0.32, 0.32,
                           0.02, 0.02, 0.02, 0.02, 0.02, 0.02])
 
-    TAU2_GRID = TAU2_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    TAU2_GRID = TAU2_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     C3_GRID = np.array([19.4, 19.8, 20.1, 20.1, 20.1, 20.1,
                         20.0, 19.8, 19.8, 19.8, 19.8, 19.8,
@@ -967,7 +970,7 @@ def heatinggrids():
                         12.6, 13.1, 14.1, 14.5, 14.5, 14.5,
                         24.3, 24.2, 24.0, 24.0, 24.0, 23.9])
 
-    C3_GRID = C3_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    C3_GRID = C3_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     TAU3_GRID = np.array([18.2, 18.2, 18.2, 18.2, 18.2, 18.2,
                           18.2, 18.2, 18.2, 18.2, 18.2, 18.2,
@@ -980,22 +983,23 @@ def heatinggrids():
                           200., 200., 200., 200., 200., 200.,
                           8.76, 8.76, 8.76, 8.76, 8.76, 8.76])
 
-    TAU3_GRID = TAU3_GRID.reshape((len(YE_GRID), len(V_GRID)), order='F')
+    TAU3_GRID = TAU3_GRID.reshape((len(V_GRID), len(YE_GRID)), order='F')
 
     # make interpolants
-    E0_interp = RegularGridInterpolator((YE_GRID, V_GRID), E0_GRID, bounds_error=False, fill_value=None)
-    ALP_interp = RegularGridInterpolator((YE_GRID, V_GRID), ALP_GRID, bounds_error=False, fill_value=None)
-    T0_interp = RegularGridInterpolator((YE_GRID, V_GRID), T0_GRID, bounds_error=False, fill_value=None)
-    SIG_interp = RegularGridInterpolator((YE_GRID, V_GRID), SIG_GRID, bounds_error=False, fill_value=None)
-    ALP1_interp = RegularGridInterpolator((YE_GRID, V_GRID), ALP1_GRID, bounds_error=False, fill_value=None)
-    T1_interp = RegularGridInterpolator((YE_GRID, V_GRID), T1_GRID, bounds_error=False, fill_value=None)
-    SIG1_interp = RegularGridInterpolator((YE_GRID, V_GRID), SIG1_GRID, bounds_error=False, fill_value=None)
-    C1_interp = RegularGridInterpolator((YE_GRID, V_GRID), C1_GRID, bounds_error=False, fill_value=None)
-    TAU1_interp = RegularGridInterpolator((YE_GRID, V_GRID), TAU1_GRID, bounds_error=False, fill_value=None)
-    C2_interp = RegularGridInterpolator((YE_GRID, V_GRID), C2_GRID, bounds_error=False, fill_value=None)
-    TAU2_interp = RegularGridInterpolator((YE_GRID, V_GRID), TAU2_GRID, bounds_error=False, fill_value=None)
-    C3_interp = RegularGridInterpolator((YE_GRID, V_GRID), C3_GRID, bounds_error=False, fill_value=None)
-    TAU3_interp = RegularGridInterpolator((YE_GRID, V_GRID), TAU3_GRID, bounds_error=False, fill_value=None)
+    E0_interp = RegularGridInterpolator((V_GRID, YE_GRID), E0_GRID, bounds_error=False, fill_value=None)
+    ALP_interp = RegularGridInterpolator((V_GRID, YE_GRID), ALP_GRID, bounds_error=False, fill_value=None)
+    T0_interp = RegularGridInterpolator((V_GRID, YE_GRID), T0_GRID, bounds_error=False, fill_value=None)
+    SIG_interp = RegularGridInterpolator((V_GRID, YE_GRID), SIG_GRID, bounds_error=False, fill_value=None)
+    ALP1_interp = RegularGridInterpolator((V_GRID, YE_GRID), ALP1_GRID, bounds_error=False, fill_value=None)
+    T1_interp = RegularGridInterpolator((V_GRID, YE_GRID), T1_GRID, bounds_error=False, fill_value=None)
+    SIG1_interp = RegularGridInterpolator((V_GRID, YE_GRID), SIG1_GRID, bounds_error=False, fill_value=None)
+    C1_interp = RegularGridInterpolator((V_GRID, YE_GRID), C1_GRID, bounds_error=False, fill_value=None)
+    TAU1_interp = RegularGridInterpolator((V_GRID, YE_GRID), TAU1_GRID, bounds_error=False, fill_value=None)
+    C2_interp = RegularGridInterpolator((V_GRID, YE_GRID), C2_GRID, bounds_error=False, fill_value=None)
+    TAU2_interp = RegularGridInterpolator((V_GRID, YE_GRID), TAU2_GRID, bounds_error=False, fill_value=None)
+    C3_interp = RegularGridInterpolator((V_GRID, YE_GRID), C3_GRID, bounds_error=False, fill_value=None)
+    TAU3_interp = RegularGridInterpolator((V_GRID, YE_GRID), TAU3_GRID, bounds_error=False, fill_value=None)
+
 
     interpolators = namedtuple('interpolators', ['E0', 'ALP', 'T0', 'SIG', 'ALP1', 'T1', 'SIG1',
                                                  'C1', 'TAU1', 'C2', 'TAU2', 'C3', 'TAU3'])
@@ -1014,37 +1018,52 @@ def heatinggrids():
     interpolators.TAU3 = TAU3_interp
     return interpolators
 
-def get_heating_terms(ye, vel):
+def get_heating_terms(ye, vel, **kwargs):
     ints = heatinggrids()
-    e0 = ints.E0([ye, vel])[0]
-    alp = ints.ALP([ye, vel])[0]
-    t0 = ints.T0([ye, vel])[0]
-    sig = ints.SIG([ye, vel])[0]
-    alp1 = ints.ALP1([ye, vel])[0]
-    t1 = ints.T1([ye, vel])[0]
-    sig1 = ints.SIG1([ye, vel])[0]
-    c1 = ints.C1([ye, vel])[0]
-    tau1 = ints.TAU1([ye, vel])[0]
-    c2 = ints.C2([ye, vel])[0]
-    tau2 = ints.TAU2([ye, vel])[0]
-    c3 = ints.C3([ye, vel])[0]
-    tau3 = ints.TAU3([ye, vel])[0]
+    e0 = ints.E0([vel, ye])[0]
+    alp = ints.ALP([vel, ye])[0]
+    t0 = ints.T0([vel, ye])[0]
+    sig = ints.SIG([vel, ye])[0]
+    alp1 = ints.ALP1([vel, ye])[0]
+    t1 = ints.T1([vel, ye])[0]
+    sig1 = ints.SIG1([vel, ye])[0]
+    c1 = ints.C1([vel, ye])[0]
+    tau1 = ints.TAU1([vel, ye])[0]
+    c2 = ints.C2([vel, ye])[0]
+    tau2 = ints.TAU2([vel, ye])[0]
+    c3 = ints.C3([vel, ye])[0]
+    tau3 = ints.TAU3([vel, ye])[0]
     heating_terms = namedtuple('heating_terms', ['e0', 'alp', 't0', 'sig', 'alp1', 't1', 'sig1', 'c1',
                                                  'tau1', 'c2', 'tau2', 'c3', 'tau3'])
-    heating_terms.e0 = e0
-    heating_terms.alp = alp
-    heating_terms.t0 = t0
-    heating_terms.sig = sig
-    heating_terms.alp1 = alp1
-    heating_terms.t1 = t1
-    heating_terms.sig1 = sig1
-    heating_terms.c1 = c1
-    heating_terms.tau1 = tau1
-    heating_terms.c2 = c2
-    heating_terms.tau2 = tau2
-    heating_terms.c3 = c3
-    heating_terms.tau3 = tau3
+
+    heating_rate_fudge = kwargs.get('heating_rate_fudge', 1.0)
+    heating_terms.e0 = e0 * heating_rate_fudge
+    heating_terms.alp = alp * heating_rate_fudge
+    heating_terms.t0 = t0 * heating_rate_fudge
+    heating_terms.sig = sig * heating_rate_fudge
+    heating_terms.alp1 = alp1 * heating_rate_fudge
+    heating_terms.t1 = t1 * heating_rate_fudge
+    heating_terms.sig1 = sig1 * heating_rate_fudge
+    heating_terms.c1 = c1 * heating_rate_fudge
+    heating_terms.tau1 = tau1 * heating_rate_fudge
+    heating_terms.c2 = c2 * heating_rate_fudge
+    heating_terms.tau2 = tau2 * heating_rate_fudge
+    heating_terms.c3 = c3 * heating_rate_fudge
+    heating_terms.tau3 = tau3 * heating_rate_fudge
     return heating_terms
+
+def _calculate_rosswogkorobkin24_qdot(time_array, ejecta_velocity, electron_fraction):
+    import pickle
+    import os
+    dirname = os.path.dirname(__file__)
+    with open(f"{dirname}/tables/qdot_rosswogkorobkin24.pck", 'rb') as file_handle:
+        qdot_object = pickle.load(file_handle)
+    steps = len(time_array)
+    _ej_velocity = np.repeat(ejecta_velocity, steps)
+    _ye = np.repeat(electron_fraction, steps)
+    full_array = np.array([_ej_velocity, _ye, time_array]).T
+    lum_in = qdot_object(full_array)
+    return lum_in
 
 def electron_fraction_from_kappa(kappa):
     """
@@ -1054,9 +1073,9 @@ def electron_fraction_from_kappa(kappa):
     :return: electron_fraction
     """
 
-    kappa_array = np.array([1, 3, 5, 20, 30])
-    ye_array = np.array([0.4,0.35,0.25,0.2, 0.1])
-    kappa_func = interp1d(kappa_array, y=ye_array)
+    kappa_array = np.array([35, 32.2, 22.3, 5.60, 5.36, 3.30, 0.96, 0.5])
+    ye_array = np.array([0.10, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4, 0.5])
+    kappa_func = interp1d(kappa_array, y=ye_array, fill_value='extrapolate')
     electron_fraction = kappa_func(kappa)
     return electron_fraction
 
@@ -1067,8 +1086,8 @@ def kappa_from_electron_fraction(ye):
     :param ye: electron fraction
     :return: electron_fraction
     """
-    kappa_array = np.array([1, 3, 5, 20, 30])
-    ye_array = np.array([0.4,0.35,0.25,0.2, 0.1])
+    kappa_array = np.array([35, 32.2, 22.3, 5.60, 5.36, 3.30, 0.96, 0.5])
+    ye_array = np.array([0.10, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4, 0.5])
     func = interp1d(ye_array, y=kappa_array, fill_value='extrapolate')
     kappa = func(ye)
     return kappa

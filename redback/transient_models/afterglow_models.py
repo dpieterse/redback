@@ -688,7 +688,7 @@ def _get_kn_dynamics(n0, Eej, Mej):
     # convert from lab frame to observer time. Approximate expression acounting for radial+azimuthal time-of-flight effect
     # (eq. 26 from Nava et al. 2013; see also Waxman 1997)
     tobs = R / (Gamma ** 2 * (1.0 + beta) * speed_of_light) + np.insert(
-        integrate.cumtrapz((1.0 - beta_sh) / beta_sh, x=R) / speed_of_light, 0, 0.0)
+        integrate.cumulative_trapezoid((1.0 - beta_sh) / beta_sh, x=R) / speed_of_light, 0, 0.0)
 
     return t, R, beta, Gamma, eden, tobs, beta_sh, Gamma_sh
 
@@ -2087,6 +2087,48 @@ def tophat(time, redshift, thv, loge0, thc, logn0, p, logepse, logepsb, ksin, g0
          'xi_N': ksin, 'd_L': dl, 'z': redshift, 'L0': l0, 'q': q, 'ts': ts, 'g0': g0,
          'spread': spread, 'latRes': latres, 'tRes': tres}
     flux_density = afterglow.fluxDensity(time, frequency, **Z)
+    if kwargs['output_format'] == 'flux_density':
+        return flux_density
+    elif kwargs['output_format'] == 'magnitude':
+        return calc_ABmag_from_flux_density(flux_density).value
+
+
+def tophat_from_emulator(time, redshift, thv, loge0, thc, logn0, p, logepse, logepsb, g0, **kwargs):
+    """
+    Evaluate a tophat afterglow model using an mpl regressor. Note that this model predicts for a fixed redshift = 0.01 and fixed ksin = 1.
+    This tophat model does not include all of the ususal kwargs
+
+    :param time: time in days in observer frame, should be in range 0.1 to 300
+    :param redshift: source redshift
+    :param thv: viewing angle in radians
+    :param loge0: log10 on axis isotropic equivalent energy
+    :param thc: half width of jet core/jet opening angle in radians
+    :param logn0: log10 number density of ISM in cm^-3
+    :param p: electron distribution power law index. Must be greater than 2.
+    :param logepse: log10 fraction of thermal energy in electrons
+    :param logepsb: log10 fraction of thermal energy in magnetic field
+    :param g0: initial lorentz factor
+    :param kwargs: Additional keyword arguments
+    :param frequency: frequency of the band to view in- single number or same length as time array
+    :param output_format: Whether to output flux density or AB mag, specified by 'flux_density' or 'magnitude'
+    :return: flux density or AB mag predicted by emulator. Note this is going to give the monochromatic magnitude at the effective frequency for the band.
+        For a proper calculation of the magntitude use the sed variant models
+    """
+
+    from redback_surrogates.afterglowmodels import tophat_emulator
+    
+    z1=0.01
+    z2= redshift
+    frequency= np.log10(kwargs['frequency'])    
+    flux_density = tophat_emulator(new_time=time/(1+z2), thv=thv, loge0=loge0, thc=thc, logn0=logn0, p=p,
+                                            logepse=logepse, logepsb=logepsb, g0=g0,frequency=frequency)
+        
+    #scaling flux density with redshift
+    dl1 = cosmo.luminosity_distance(z1)
+    dl2 = cosmo.luminosity_distance(z2)
+    scale_factor = ((dl1**2)*(1+z1)) / (dl2**2)
+    flux_density=flux_density*scale_factor
+    
     if kwargs['output_format'] == 'flux_density':
         return flux_density
     elif kwargs['output_format'] == 'magnitude':

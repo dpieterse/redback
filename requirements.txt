@@ -1,15 +1,1 @@
-numpy
-setuptools
-pandas
-scipy
-selenium
-sncosmo
-matplotlib
-astropy
-afterglowpy
-extinction
-requests
-lxml
-sphinx-rtd-theme
-sphinx-tabs
-bilby
+.
